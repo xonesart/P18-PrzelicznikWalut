@@ -19,20 +19,15 @@ import java.math.BigDecimal;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.UIManager;
 import java.awt.Color;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
-public class PrzelicznikWalut1 {
-	private static final Color KOLOR_ZWYKLY = Color.BLACK;
-	private static final Color KOLOR_BLAD = Color.RED;
-	private static final Color KOLOR_ZMIANA = new Color(0x008800);
+public class PrzelicznikWalut0 {
 
 	private static final Font FONT_LABEL = new Font("Dialog", Font.PLAIN, 24);
 	private static final Font FONT_DANE = new Font("Dialog", Font.BOLD, 24);
-	private static final Font FONT_BUTTON = new Font("Dialog", Font.BOLD, 24);
-	private static final Font FONT_LICZBY = new Font("Dialog", Font.BOLD, 32);
-
 	private JFrame frmPrzelicznikWalut;
 	private JLabel lblNrTabeli;
 	private JLabel lblDataTabeli;
@@ -43,7 +38,6 @@ public class PrzelicznikWalut1 {
 	private Waluta wybranaWaluta;
 	private JTextField txtKwotaZlote;
 	private JTextField txtKwotaWaluta;
-	private Kierunek ostatnio;
 
 	/**
 	 * Launch the application.
@@ -52,7 +46,7 @@ public class PrzelicznikWalut1 {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					PrzelicznikWalut1 window = new PrzelicznikWalut1();
+					PrzelicznikWalut0 window = new PrzelicznikWalut0();
 					window.frmPrzelicznikWalut.setVisible(true);
 					window.pobierzTabele();
 				} catch (Exception e) {
@@ -65,7 +59,7 @@ public class PrzelicznikWalut1 {
 	/**
 	 * Create the application.
 	 */
-	public PrzelicznikWalut1() {
+	public PrzelicznikWalut0() {
 		initialize();
 	}
 
@@ -113,39 +107,29 @@ public class PrzelicznikWalut1 {
 		
 		txtKwotaZlote = new JTextField();
 		txtKwotaZlote.setHorizontalAlignment(SwingConstants.TRAILING);
-		txtKwotaZlote.setFont(FONT_LICZBY);
+		txtKwotaZlote.setFont(new Font("Dialog", Font.BOLD, 32));
 		txtKwotaZlote.setText("0");
 		txtKwotaZlote.setColumns(10);
-		txtKwotaZlote.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				przelicz(Kierunek.PLN_NA_WALUTE, txtKwotaZlote, txtKwotaWaluta);
-			}
-		});
 		
 		txtKwotaWaluta = new JTextField();
 		txtKwotaWaluta.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtKwotaWaluta.setText("0");
-		txtKwotaWaluta.setFont(FONT_LICZBY);
+		txtKwotaWaluta.setFont(new Font("Dialog", Font.BOLD, 32));
 		txtKwotaWaluta.setColumns(10);
-		txtKwotaWaluta.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				przelicz(Kierunek.PLN_NA_WALUTE, txtKwotaWaluta, txtKwotaZlote);
-			}
-		});
 		
 		JButton btnPrzeliczNaWalut = new JButton("Przelicz na walutę");
-		btnPrzeliczNaWalut.setFont(FONT_BUTTON);
+		btnPrzeliczNaWalut.setFont(new Font("Dialog", Font.BOLD, 24));
 		btnPrzeliczNaWalut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				przelicz(Kierunek.PLN_NA_WALUTE, txtKwotaZlote, txtKwotaWaluta);
+				przeliczZloteNaWalute();
 			}
 		});
 		
 		JButton btnPrzeliczNaZote = new JButton("Przelicz na złote");
-		btnPrzeliczNaZote.setFont(FONT_BUTTON);
+		btnPrzeliczNaZote.setFont(new Font("Dialog", Font.BOLD, 24));
 		btnPrzeliczNaZote.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				przelicz(Kierunek.WALUTA_NA_PLN, txtKwotaWaluta, txtKwotaZlote);
+				przeliczWaluteNaZlote();
 			}
 		});
 		
@@ -193,7 +177,7 @@ public class PrzelicznikWalut1 {
 		panel_2.setLayout(gl_panel_2);
 		
 		JLabel lblWybierzWalut = new JLabel("Wybierz walutę");
-		lblWybierzWalut.setFont(FONT_LABEL);
+		lblWybierzWalut.setFont(new Font("Dialog", Font.PLAIN, 24));
 		
 		comboBoxWaluta = new JComboBox<>();
 		comboBoxWaluta.setBackground(new Color(255, 255, 255));
@@ -206,16 +190,16 @@ public class PrzelicznikWalut1 {
 		comboBoxWaluta.setFont(FONT_DANE);
 		
 		JLabel lblWaluta = new JLabel("Waluta");
-		lblWaluta.setFont(FONT_LABEL);
+		lblWaluta.setFont(new Font("Dialog", Font.PLAIN, 24));
 		
 		JLabel lblKurs2 = new JLabel("Kurs");
-		lblKurs2.setFont(FONT_LABEL);
+		lblKurs2.setFont(new Font("Dialog", Font.PLAIN, 24));
 		
 		lblNazwaWaluty = new JLabel("--");
-		lblNazwaWaluty.setFont(FONT_DANE);
+		lblNazwaWaluty.setFont(new Font("Dialog", Font.BOLD, 24));
 		
 		lblKurs_1 = new JLabel("--");
-		lblKurs_1.setFont(FONT_DANE);
+		lblKurs_1.setFont(new Font("Dialog", Font.BOLD, 24));
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -308,30 +292,6 @@ public class PrzelicznikWalut1 {
 		txtKwotaWaluta.setText(wynik.toString());
 	}
 
-	private void przelicz(Kierunek kierunek, JTextField skad, JTextField dokad) {
-		try {
-			skad.setForeground(KOLOR_ZWYKLY);
-			
-			String kwotaTxt = skad.getText();
-			kwotaTxt = kwotaTxt.trim().replace(',', '.');
-			BigDecimal kwota = new BigDecimal(kwotaTxt);
-			
-			BigDecimal wynik = null;
-			if(kierunek == Kierunek.PLN_NA_WALUTE) {
-				wynik = wybranaWaluta.przeliczZloteNaWalute(kwota);
-			} else {
-				wynik = wybranaWaluta.przeliczWaluteNaZlote(kwota);
-			}
-			
-			dokad.setText(wynik.toString());
-			dokad.setForeground(KOLOR_ZMIANA);
-			ostatnio = kierunek;
-		} catch (Exception e) {
-			dokad.setText("błąd");
-			dokad.setForeground(KOLOR_BLAD);
-		}
-	}
-	
 	private void pobierzTabele() {
 		// Aby w aplikacji okienkowej wykonać operację w tle (w innym wątku),
 		// najwygodniej użyć klasy SwingWorker
@@ -382,14 +342,6 @@ public class PrzelicznikWalut1 {
 		if(tabela != null) {
 			wybranaWaluta = tabela.znajdz(kod);
 			uaktualnijWidokWaluty();
-			if(ostatnio != null) switch(ostatnio) {
-			case PLN_NA_WALUTE:
-				przelicz(ostatnio, txtKwotaZlote, txtKwotaWaluta);
-				break;
-			case WALUTA_NA_PLN:
-				przelicz(ostatnio, txtKwotaWaluta, txtKwotaZlote);
-				break;
-			}
 		}
 	}
 
