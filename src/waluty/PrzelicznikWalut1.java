@@ -6,9 +6,12 @@ import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
+import java.util.concurrent.ExecutionException;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 
@@ -22,6 +25,7 @@ public class PrzelicznikWalut1 {
 	private JComboBox<String> comboBoxWaluta;
 	private JLabel lblNazwaWaluty;
 	private JLabel lblKurs_1;
+	private Tabela tabela;
 
 	/**
 	 * Launch the application.
@@ -32,6 +36,7 @@ public class PrzelicznikWalut1 {
 				try {
 					PrzelicznikWalut1 window = new PrzelicznikWalut1();
 					window.frmPrzelicznikWalut.setVisible(true);
+					window.pobierzTabele();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -88,8 +93,8 @@ public class PrzelicznikWalut1 {
 		JLabel lblWaluta = new JLabel("Waluta");
 		lblWaluta.setFont(new Font("Dialog", Font.PLAIN, 24));
 		
-		JLabel lblKurs = new JLabel("Kurs");
-		lblKurs.setFont(new Font("Dialog", Font.PLAIN, 24));
+		JLabel lblKurs2 = new JLabel("Kurs");
+		lblKurs2.setFont(new Font("Dialog", Font.PLAIN, 24));
 		
 		lblNazwaWaluty = new JLabel("nrTabeli");
 		lblNazwaWaluty.setFont(new Font("Dialog", Font.BOLD, 24));
@@ -104,7 +109,7 @@ public class PrzelicznikWalut1 {
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblWybierzWalut, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblWaluta, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblKurs, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblKurs2, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
 					.addGap(43)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblKurs_1, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE)
@@ -125,7 +130,7 @@ public class PrzelicznikWalut1 {
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addComponent(lblWaluta, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(lblKurs, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
+							.addComponent(lblKurs2, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_panel_1.createSequentialGroup()
 							.addComponent(lblNazwaWaluty, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
@@ -156,9 +161,9 @@ public class PrzelicznikWalut1 {
 						.addComponent(lblNumerTabeli, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
 					.addGap(92)
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblDataTabeli, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNrTabeli, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(307, Short.MAX_VALUE))
+						.addComponent(lblDataTabeli, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
+						.addComponent(lblNrTabeli, GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -176,4 +181,47 @@ public class PrzelicznikWalut1 {
 		panel.setLayout(gl_panel);
 		frmPrzelicznikWalut.getContentPane().setLayout(groupLayout);
 	}
+	
+	private void pobierzTabele() {
+		// Aby w aplikacji okienkowej wykonać operację w tle (w innym wątku),
+		// najwygodniej użyć klasy SwingWorker
+		
+		SwingWorker<Tabela, Tabela> worker =
+				new SwingWorker<Tabela, Tabela>() {
+
+			protected Tabela doInBackground() {
+				// To wykona się w tle (w innym wątku)
+				return ObslugaNBP.pobierzAktualnaTabele();
+			}
+			
+			protected void done() {
+				// To zostanie wykonane przez wątek interfejsu graficznego "EDT"
+				
+				// Na pole tabela wpiszę wynik metody doInBackground
+				try {
+					tabela = this.get();
+					
+					// Uaktualniam to, co wyświetla okno
+					uaktualnijWidokTabeli();
+					uaktualnijWaluty();
+					
+				} catch (InterruptedException | ExecutionException e) {
+				}
+			}
+		}; // koniec tworzenia SwingWorkera
+		
+		// uruchamiam workera ("wysyłam do pracy")
+		worker.execute();
+	}
+
+	protected void uaktualnijWidokTabeli() {
+		lblNrTabeli.setText(tabela.getNumerTabeli());
+		lblDataTabeli.setText(tabela.getData().toString());
+	}
+
+	protected void uaktualnijWaluty() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
