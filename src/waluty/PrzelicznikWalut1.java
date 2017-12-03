@@ -60,7 +60,7 @@ public class PrzelicznikWalut1 {
 	private void initialize() {
 		frmPrzelicznikWalut = new JFrame();
 		frmPrzelicznikWalut.setTitle("Przelicznik Walut");
-		frmPrzelicznikWalut.setBounds(100, 100, 742, 593);
+		frmPrzelicznikWalut.setBounds(100, 100, 678, 593);
 		frmPrzelicznikWalut.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel panel = new JPanel();
@@ -224,6 +224,7 @@ public class PrzelicznikWalut1 {
 	protected void uaktualnijWidokTabeli() {
 		lblNrTabeli.setText(tabela.getNumerTabeli());
 		lblDataTabeli.setText(tabela.getData().toString());
+		comboBoxWaluta.setModel(new DefaultComboBoxModel<>(tabela.getKodyWalut()));
 	}
 
 	protected void uaktualnijWidokWaluty() {
