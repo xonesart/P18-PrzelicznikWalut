@@ -77,4 +77,11 @@ public class Waluta {
 		return kod + " (" + nazwa + ") -  " + kurs;
 	}
 
+	public BigDecimal przeliczZloteNaWalute(BigDecimal kwota) {		
+		return kwota.divide(kurs, 2, RoundingMode.HALF_UP);
+	}
+
+	public BigDecimal przeliczWaluteNaZlote(BigDecimal kwota) {
+		return kwota.multiply(kurs).setScale(2, RoundingMode.HALF_UP);
+	}
 }

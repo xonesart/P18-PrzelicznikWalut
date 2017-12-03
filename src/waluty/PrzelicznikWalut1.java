@@ -15,7 +15,10 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
+import javax.swing.JButton;
 
 public class PrzelicznikWalut1 {
 
@@ -29,6 +32,8 @@ public class PrzelicznikWalut1 {
 	private JLabel lblKurs_1;
 	private Tabela tabela;
 	private Waluta wybranaWaluta;
+	private JTextField txtKwotaZlote;
+	private JTextField txtKwotaWaluta;
 
 	/**
 	 * Launch the application.
@@ -66,14 +71,17 @@ public class PrzelicznikWalut1 {
 		JPanel panel = new JPanel();
 		
 		JPanel panel_1 = new JPanel();
+		
+		JPanel panel_2 = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(frmPrzelicznikWalut.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE)
-						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE))
+						.addComponent(panel_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE)
+						.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 646, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -83,8 +91,64 @@ public class PrzelicznikWalut1 {
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(271, Short.MAX_VALUE))
+					.addGap(18)
+					.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
+					.addContainerGap())
 		);
+		
+		txtKwotaZlote = new JTextField();
+		txtKwotaZlote.setFont(new Font("Dialog", Font.BOLD, 32));
+		txtKwotaZlote.setText("0");
+		txtKwotaZlote.setColumns(10);
+		
+		txtKwotaWaluta = new JTextField();
+		txtKwotaWaluta.setText("0");
+		txtKwotaWaluta.setFont(new Font("Dialog", Font.BOLD, 32));
+		txtKwotaWaluta.setColumns(10);
+		
+		JButton btnPrzeliczNaWalut = new JButton("Przelicz na walutę");
+		btnPrzeliczNaWalut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				przeliczZloteNaWalute();
+			}
+		});
+		
+		JButton btnPrzeliczNaZote = new JButton("Przelicz na złote");
+		btnPrzeliczNaZote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				przeliczWaluteNaZlote();
+			}
+		});
+		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
+		gl_panel_2.setHorizontalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addComponent(txtKwotaZlote, GroupLayout.PREFERRED_SIZE, 353, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(btnPrzeliczNaWalut, GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE))
+						.addGroup(gl_panel_2.createSequentialGroup()
+							.addComponent(txtKwotaWaluta, GroupLayout.PREFERRED_SIZE, 353, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(btnPrzeliczNaZote, GroupLayout.PREFERRED_SIZE, 251, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		gl_panel_2.setVerticalGroup(
+			gl_panel_2.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_2.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(btnPrzeliczNaWalut, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(txtKwotaZlote, Alignment.LEADING))
+					.addGap(18)
+					.addGroup(gl_panel_2.createParallelGroup(Alignment.LEADING)
+						.addComponent(txtKwotaWaluta, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnPrzeliczNaZote, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(127, Short.MAX_VALUE))
+		);
+		panel_2.setLayout(gl_panel_2);
 		
 		JLabel lblWybierzWalut = new JLabel("Wybierz walutę");
 		lblWybierzWalut.setFont(new Font("Dialog", Font.PLAIN, 24));
@@ -189,6 +253,18 @@ public class PrzelicznikWalut1 {
 		frmPrzelicznikWalut.getContentPane().setLayout(groupLayout);
 	}
 	
+	protected void przeliczWaluteNaZlote() {
+		BigDecimal kwota = new BigDecimal(txtKwotaWaluta.getText());
+		BigDecimal wynik = wybranaWaluta.przeliczWaluteNaZlote(kwota);
+		txtKwotaZlote.setText(wynik.toString());
+	}
+
+	protected void przeliczZloteNaWalute() {
+		BigDecimal kwota = new BigDecimal(txtKwotaZlote.getText());
+		BigDecimal wynik = wybranaWaluta.przeliczZloteNaWalute(kwota);
+		txtKwotaWaluta.setText(wynik.toString());
+	}
+
 	private void pobierzTabele() {
 		// Aby w aplikacji okienkowej wykonać operację w tle (w innym wątku),
 		// najwygodniej użyć klasy SwingWorker
@@ -242,5 +318,4 @@ public class PrzelicznikWalut1 {
 			uaktualnijWidokWaluty();
 		}
 	}
-
 }
